@@ -1,0 +1,19 @@
+# --- Build artifacts and temporary files ---
+/target/
+
+# --- OS and editor temporary files ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# --- Rust specific files ---
+# For "Application (bin)" projects, it is recommended to include Cargo.lock
+# in the repository to ensure consistent build environments.
+# Uncomment the line below only if you specifically need to ignore it.
+# Cargo.lock
+
+# --- Miscellaneous (c2rust artifacts, etc.) ---
+*.log
