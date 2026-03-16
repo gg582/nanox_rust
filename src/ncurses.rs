@@ -172,7 +172,7 @@ pub const MARGIN: ::core::ffi::c_int = 8 as ::core::ffi::c_int;
 pub const SCRSIZ: ::core::ffi::c_int = 64 as ::core::ffi::c_int;
 pub const NPAUSE: ::core::ffi::c_int = 2 as ::core::ffi::c_int;
 #[no_mangle]
-pub static mut ncurses_term: terminal = unsafe {
+pub static mut ncurses_term: terminal = {
     terminal {
         t_mrow: 0 as ::core::ffi::c_short,
         t_nrow: 0 as ::core::ffi::c_short,

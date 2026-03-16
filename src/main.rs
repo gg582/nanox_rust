@@ -8,7 +8,6 @@
 
 #![feature(c_variadic)]
 #![feature(extern_types)]
-#![feature(raw_ref_op)]
 
 mod basic;
 mod bind;
@@ -539,7 +538,7 @@ pub const MDVIEW: ::core::ffi::c_int = 0x20 as ::core::ffi::c_int;
 pub const MDOVER: ::core::ffi::c_int = 0x40 as ::core::ffi::c_int;
 pub const MDASAVE: ::core::ffi::c_int = 0x800 as ::core::ffi::c_int;
 #[no_mangle]
-pub static mut keytab: [key_tab; 2048] = unsafe {
+pub static mut keytab: [key_tab; 2048] = {
     [
         key_tab {
             k_code: (SPEC | 'A' as i32 as ::core::ffi::c_uint) as ::core::ffi::c_int,

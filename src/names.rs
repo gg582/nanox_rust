@@ -219,7 +219,7 @@ pub struct name_bind {
     >,
 }
 #[no_mangle]
-pub static mut names: [name_bind; 164] = unsafe {
+pub static mut names: [name_bind; 164] = {
     [
         name_bind {
             n_name: b"abort-command\0" as *const u8 as *const ::core::ffi::c_char

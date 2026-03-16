@@ -1916,7 +1916,7 @@ pub unsafe extern "C" fn mlerase() {
 #[no_mangle]
 pub unsafe extern "C" fn mlwrite(mut fmt: *const ::core::ffi::c_char, mut args: ...) {
     let mut c: ::core::ffi::c_int = 0;
-    let mut ap: ::core::ffi::VaListImpl;
+    let mut ap: ::std::ffi::VaList;
     let mut raw: [::core::ffi::c_char; 1024] = [0; 1024];
     let mut final_0: [::core::ffi::c_char; 1200] = [0; 1200];
     let mut dest: mlbuf = mlbuf {
@@ -1940,7 +1940,7 @@ pub unsafe extern "C" fn mlwrite(mut fmt: *const ::core::ffi::c_char, mut args: 
         &raw mut raw as *mut ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 1024]>() as size_t,
     );
-    ap = args.clone();
+    ap = args.as_va_list();
     loop {
         let fresh2 = fmt;
         fmt = fmt.offset(1);

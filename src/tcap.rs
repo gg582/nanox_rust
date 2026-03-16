@@ -119,7 +119,7 @@ static mut TI: *mut ::core::ffi::c_char = ::core::ptr::null::<::core::ffi::c_cha
 static mut TE: *mut ::core::ffi::c_char = ::core::ptr::null::<::core::ffi::c_char>()
     as *mut ::core::ffi::c_char;
 #[no_mangle]
-pub static mut tcap_term: terminal = unsafe {
+pub static mut tcap_term: terminal = {
     terminal {
         t_mrow: 0 as ::core::ffi::c_short,
         t_nrow: 0 as ::core::ffi::c_short,

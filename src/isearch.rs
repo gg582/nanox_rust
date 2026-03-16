@@ -535,7 +535,7 @@ pub unsafe extern "C" fn minibuf_input(
             -2147483583 => {
                 completion_prev();
             }
-            -2147483583 => {
+            -2147483582 => {
                 completion_next();
             }
             402653249 => {

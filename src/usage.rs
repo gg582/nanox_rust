@@ -75,7 +75,7 @@ unsafe extern "C" fn report(
         &raw mut msg as *mut ::core::ffi::c_char,
         ::core::mem::size_of::<[::core::ffi::c_char; 4096]>() as size_t,
         err,
-        params.as_va_list(),
+        params,
     );
     fprintf(
         stderr,
@@ -86,12 +86,10 @@ unsafe extern "C" fn report(
 }
 #[no_mangle]
 pub unsafe extern "C" fn die(mut err: *const ::core::ffi::c_char, mut args: ...) {
-    let mut params: ::core::ffi::VaListImpl;
-    params = args.clone();
     report(
         b"fatal: \0" as *const u8 as *const ::core::ffi::c_char,
         err,
-        params.as_va_list(),
+        args.as_va_list()
     );
     exit(128 as ::core::ffi::c_int);
 }
