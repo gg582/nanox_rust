@@ -113,7 +113,7 @@ For users coming from a traditional Emacs background, Nanox maintains compatibil
 ## Installation & Build
 
 This is a rust fork of Nanox.
-`cargo build --release` to build.
+`RUSTC_BOOTSTRAP=1 cargo build --release` to build.
 Then, copy the binary to your desired location.
 
 ---
