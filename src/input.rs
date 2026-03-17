@@ -806,6 +806,12 @@ pub unsafe extern "C" fn getstring(
                     ) as *mut FILE;
                     nskip = 0 as ::core::ffi::c_int;
                 }
+                if tmpf.is_null() {
+                    unlink(&raw mut tmp as *mut ::core::ffi::c_char);
+                    vttbeep();
+                    nskip = -(1 as ::core::ffi::c_int);
+                    continue;
+                }
                 c = ' ' as i32;
                 n = nskip;
                 while n > 0 as ::core::ffi::c_int {
