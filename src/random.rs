@@ -193,15 +193,31 @@ pub const MDCMOD: ::core::ffi::c_int = 0x4 as ::core::ffi::c_int;
 pub const MDVIEW: ::core::ffi::c_int = 0x20 as ::core::ffi::c_int;
 #[no_mangle]
 pub static mut tabsize: ::core::ffi::c_int = 0;
+unsafe extern "C" fn line_char(mut lp: *mut line, mut i: ::core::ffi::c_int) -> ::core::ffi::c_int {
+    *(&raw mut (*lp).l_text as *mut ::core::ffi::c_uchar).offset(i as isize)
+        as ::core::ffi::c_int
+        & 0xff as ::core::ffi::c_int
+}
+unsafe extern "C" fn is_indent_char(mut ch: ::core::ffi::c_int) -> bool {
+    ch == ' ' as i32 || ch == '\t' as i32
+}
+unsafe extern "C" fn first_non_indent(mut lp: *mut line) -> ::core::ffi::c_int {
+    let mut i: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
+    while i < (*lp).l_used {
+        if !is_indent_char(line_char(lp, i)) {
+            break;
+        }
+        i += 1;
+    }
+    i
+}
 unsafe extern "C" fn get_indent(mut lp: *mut line) -> ::core::ffi::c_int {
     let mut nicol: ::core::ffi::c_int = 0 as ::core::ffi::c_int;
     let mut i: ::core::ffi::c_int = 0;
-    let mut c: ::core::ffi::c_int = 0;
     i = 0 as ::core::ffi::c_int;
     while i < (*lp).l_used {
-        c = *(&raw mut (*lp).l_text as *mut ::core::ffi::c_uchar).offset(i as isize)
-            as ::core::ffi::c_int & 0xff as ::core::ffi::c_int;
-        if c != ' ' as i32 && c != '\t' as i32 {
+        let c: ::core::ffi::c_int = line_char(lp, i);
+        if !is_indent_char(c) {
             break;
         }
         if c == '\t' as i32 {
@@ -214,27 +230,14 @@ unsafe extern "C" fn get_indent(mut lp: *mut line) -> ::core::ffi::c_int {
     return nicol;
 }
 unsafe extern "C" fn set_indent(mut target: ::core::ffi::c_int) {
-    let mut ch: ::core::ffi::c_int = 0;
     let mut cur: ::core::ffi::c_int = get_indent((*curwp).w_dotp);
     if cur == target {
-        (*curwp).w_doto = 0 as ::core::ffi::c_int;
-        while (*curwp).w_doto < (*(*curwp).w_dotp).l_used {
-            ch = *(&raw mut (*(*curwp).w_dotp).l_text as *mut ::core::ffi::c_uchar)
-                .offset((*curwp).w_doto as isize) as ::core::ffi::c_int
-                & 0xff as ::core::ffi::c_int;
-            if ch != ' ' as i32 && ch != '\t' as i32 {
-                break;
-            }
-            (*curwp).w_doto += 1;
-        }
+        (*curwp).w_doto = first_non_indent((*curwp).w_dotp);
         return;
     }
     (*curwp).w_doto = 0 as ::core::ffi::c_int;
     while (*curwp).w_doto < (*(*curwp).w_dotp).l_used {
-        ch = *(&raw mut (*(*curwp).w_dotp).l_text as *mut ::core::ffi::c_uchar)
-            .offset((*curwp).w_doto as isize) as ::core::ffi::c_int
-            & 0xff as ::core::ffi::c_int;
-        if ch != ' ' as i32 && ch != '\t' as i32 {
+        if !is_indent_char(line_char((*curwp).w_dotp, (*curwp).w_doto)) {
             break;
         }
         ldelchar(1 as ::core::ffi::c_long, FALSE);
@@ -254,35 +257,17 @@ unsafe extern "C" fn set_indent(mut target: ::core::ffi::c_int) {
             }
             let mut num_tabs: ::core::ffi::c_int = target / step;
             let mut num_spaces: ::core::ffi::c_int = target % step;
-            loop {
-                let fresh0 = num_tabs;
-                num_tabs = num_tabs - 1;
-                if !(fresh0 != 0) {
-                    break;
-                }
+            while num_tabs > 0 as ::core::ffi::c_int {
                 linsert(1 as ::core::ffi::c_int, '\t' as i32);
+                num_tabs -= 1;
             }
-            loop {
-                let fresh1 = num_spaces;
-                num_spaces = num_spaces - 1;
-                if !(fresh1 != 0) {
-                    break;
-                }
+            while num_spaces > 0 as ::core::ffi::c_int {
                 linsert(1 as ::core::ffi::c_int, ' ' as i32);
+                num_spaces -= 1;
             }
         }
     }
-    (*curwp).w_doto = 0 as ::core::ffi::c_int;
-    while (*curwp).w_doto < (*(*curwp).w_dotp).l_used {
-        let mut ch2: ::core::ffi::c_int = *(&raw mut (*(*curwp).w_dotp).l_text
-            as *mut ::core::ffi::c_uchar)
-            .offset((*curwp).w_doto as isize) as ::core::ffi::c_int
-            & 0xff as ::core::ffi::c_int;
-        if ch2 != ' ' as i32 && ch2 != '\t' as i32 {
-            break;
-        }
-        (*curwp).w_doto += 1;
-    }
+    (*curwp).w_doto = first_non_indent((*curwp).w_dotp);
 }
 unsafe extern "C" fn is_closing_block(mut lp: *mut line) -> ::core::ffi::c_int {
     let mut i: ::core::ffi::c_int = 0;
